@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>오늘의 5문제</title>
+<meta name="theme-color" content="#1B2B4B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="5문제">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gothic+A1:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF1F7; --surface:#FFFFFF; --surface-2:#F5F7FB; --ink:#1B2B4B; --ink-2:#5B6782; --ink-3:#97A1B6;
+  --ball:#F26B1D; --ball-soft:#FFE6D6; --gold:#F2B705; --gold-2:#FFE27A; --ok:#1F9D5C; --ok-soft:#DDF4E7;
+  --bad:#E0464B; --bad-soft:#FDE3E3; --line:#D6DDE9; --navy:#1B2B4B;
+  color-scheme:light;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#111827; --surface:#1B2438; --surface-2:#222D45; --ink:#EEF2FA; --ink-2:#A3AEC6; --ink-3:#6C7894;
+    --ball:#FF8443; --ball-soft:#3B2A22; --gold:#F5C126; --gold-2:#6B5714; --ok:#3CC47F; --ok-soft:#173527;
+    --bad:#FF6B6F; --bad-soft:#3D1F24; --line:#2E3A55; --navy:#0B1222; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111827; --surface:#1B2438; --surface-2:#222D45; --ink:#EEF2FA; --ink-2:#A3AEC6; --ink-3:#6C7894;
+  --ball:#FF8443; --ball-soft:#3B2A22; --gold:#F5C126; --gold-2:#6B5714; --ok:#3CC47F; --ok-soft:#173527;
+  --bad:#FF6B6F; --bad-soft:#3D1F24; --line:#2E3A55; --navy:#0B1222; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Gothic A1","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:16px;line-height:1.55;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--ball);outline-offset:2px}
+.disp{font-family:"Jua","Gothic A1",sans-serif;font-weight:400;letter-spacing:-0.01em}
+.wrap{max-width:520px;margin:0 auto;padding:16px 16px 110px}
+.muted{color:var(--ink-2)}
+.small{font-size:13px}
+.row{display:flex;align-items:center;gap:8px}
+.sp{flex:1}
+.card{background:var(--surface);border-radius:20px;padding:18px;border:1px solid var(--line)}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;background:var(--surface-2);color:var(--ink-2)}
+.chip.mm{background:var(--navy);color:#fff}
+.chip.basic{background:var(--ball-soft);color:var(--ball)}
+.btn{border:0;border-radius:16px;padding:15px 18px;font-weight:800;font-size:17px;background:var(--ball);color:#fff;width:100%}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.ghost{background:var(--surface-2);color:var(--ink)}
+.btn.small{width:auto;padding:9px 14px;font-size:14px;border-radius:12px}
+.seg{display:flex;background:var(--surface-2);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;padding:7px 12px;border-radius:9px;font-size:13px;font-weight:700;color:var(--ink-2)}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+h1,h2,h3{margin:0}
+
+/* sticker */
+.stk{position:relative;display:grid;place-items:center;border-radius:50%;flex:none}
+.stk .em{line-height:1}
+.stk.gold{box-shadow:0 0 0 3px var(--gold),0 0 0 6px var(--gold-2),0 4px 14px rgba(242,183,5,.45)}
+.stk .ball{position:absolute;right:-6%;bottom:-6%;font-size:.42em;line-height:1;background:var(--surface);border-radius:50%;padding:2px;box-shadow:0 0 0 2px var(--gold)}
+.stk.sil{background:var(--surface-2)!important}
+.stk.sil .em{filter:brightness(0);opacity:.16}
+[data-theme="dark"] .stk.sil .em{filter:brightness(0) invert(1);opacity:.14}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .stk.sil .em{filter:brightness(0) invert(1);opacity:.14}}
+
+/* bottom nav */
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:20}
+.nav .in{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.nav button{border:0;background:none;padding:9px 0 8px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:700;color:var(--ink-3)}
+.nav button .ic{font-size:22px;filter:grayscale(1);opacity:.6}
+.nav button.on{color:var(--ball)}
+.nav button.on .ic{filter:none;opacity:1}
+.nav .dot{position:absolute;margin-left:22px;margin-top:2px;width:8px;height:8px;border-radius:50%;background:var(--bad)}
+
+/* today */
+.dots{display:flex;gap:6px}
+.dots i{width:30px;height:8px;border-radius:4px;background:var(--line)}
+.dots i.ok{background:var(--ok)} .dots i.bad{background:var(--bad)} .dots i.cur{background:var(--ball)}
+.q{font-size:19px;line-height:1.7;margin:12px 0 4px;word-break:keep-all}
+.ansbox{display:flex;align-items:baseline;gap:8px;border:2px solid var(--line);border-radius:16px;padding:12px 16px;margin-top:14px;min-height:62px;background:var(--surface-2)}
+.ansbox .v{font-family:"Jua",sans-serif;font-size:30px;flex:1;letter-spacing:.02em}
+.ansbox .v.ph{color:var(--ink-3);font-size:18px;font-family:inherit}
+.ansbox .u{font-weight:800;color:var(--ink-2)}
+.ansbox.focus{border-color:var(--ball)}
+.pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.pad button{border:0;border-radius:14px;padding:13px 0;font-family:"Jua",sans-serif;font-size:24px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.pad button.sym{background:var(--surface-2);color:var(--ink-2);font-size:20px}
+.pad button:active{transform:scale(.96)}
+.timer{font-variant-numeric:tabular-nums;font-weight:800;color:var(--ink-2);font-size:14px}
+.fb{border-radius:18px;padding:16px;margin-top:14px;text-align:center}
+.fb.ok{background:var(--ok-soft);color:var(--ok)} .fb.bad{background:var(--bad-soft);color:var(--bad)}
+.fb .big{font-family:"Jua",sans-serif;font-size:26px}
+.preview{display:flex;gap:8px;overflow-x:auto;padding:6px 2px 4px}
+.hero{background:var(--navy);color:#fff;border-radius:24px;padding:22px 20px;position:relative;overflow:hidden}
+.hero .court{position:absolute;right:-60px;top:-60px;width:200px;height:200px;border:3px solid rgba(255,255,255,.12);border-radius:50%}
+.hero .court2{position:absolute;right:-10px;top:-10px;width:100px;height:100px;border:3px solid rgba(255,255,255,.12);border-radius:50%}
+.hero h1{font-size:30px;line-height:1.25}
+.plan{display:flex;gap:6px;margin-top:14px}
+.plan span{flex:1;text-align:center;padding:8px 0;border-radius:12px;background:rgba(255,255,255,.1);font-size:13px;font-weight:700}
+.plan span.m{background:var(--ball);color:#fff}
+.resline{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.resline:first-child{border-top:0}
+.mk{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;flex:none}
+.mk.ok{background:var(--ok-soft);color:var(--ok)} .mk.bad{background:var(--bad-soft);color:var(--bad)}
+
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal .wd{text-align:center;font-size:12px;font-weight:800;color:var(--ink-3);padding-bottom:2px}
+.cal .wd.sun{color:var(--bad)}
+.cell{aspect-ratio:1/1.15;border-radius:14px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px}
+.cell .n{position:absolute;top:4px;left:6px;font-weight:800;font-size:11px;color:var(--ink-3)}
+.cell.future{opacity:.45}
+.cell.miss{border:2px dashed var(--line);opacity:.55}
+.cell.miss .paw{font-size:16px;opacity:.35;filter:grayscale(1)}
+.cell.today{border:2px dashed var(--ball);background:var(--ball-soft)}
+.cell.today .n{color:var(--ball)}
+.cell.today .go{font-family:"Jua",sans-serif;color:var(--ball);font-size:13px}
+.cell.done{background:var(--surface);box-shadow:0 2px 0 var(--line);border:1px solid var(--line)}
+.cell.done .n{color:var(--ink)}
+.cell.perfect{background:linear-gradient(160deg,#FFF6D2,#FFE7A3);border:1px solid var(--gold)}
+[data-theme="dark"] .cell.perfect{background:linear-gradient(160deg,#3A3216,#4A3B0E)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cell.perfect{background:linear-gradient(160deg,#3A3216,#4A3B0E)}}
+.cell.empty{visibility:hidden}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;text-align:center}
+.stat b{display:block;font-family:"Jua",sans-serif;font-size:26px;font-weight:400;line-height:1.1}
+.stat span{font-size:12px;color:var(--ink-2);font-weight:700}
+
+/* dex */
+.dex{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 8px}
+.dex .it{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.dex .nm{font-size:12px;font-weight:700;line-height:1.25;word-break:keep-all}
+.dex .it.cand .stk.sil{box-shadow:0 0 0 2px var(--ball) inset}
+.bar{height:10px;border-radius:5px;background:var(--surface-2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ball);border-radius:5px}
+
+/* retry */
+.wl{display:flex;gap:12px;padding:14px 0;border-top:1px solid var(--line);text-align:left;background:none;border-left:0;border-right:0;border-bottom:0;width:100%}
+.wl:first-child{border-top:0}
+.cnt{flex:none;width:46px;text-align:center}
+.cnt b{display:block;font-family:"Jua",sans-serif;font-size:24px;font-weight:400;color:var(--bad);line-height:1}
+.cnt span{font-size:11px;color:var(--ink-2);font-weight:700}
+.wl.fixed .cnt b{color:var(--ok)}
+.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all}
+
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(10,16,30,.6);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:92%;overflow:auto}
+.reveal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#2A3B63,#0E1626 70%);color:#fff;text-align:center;padding:24px}
+.flip{width:200px;height:200px;perspective:800px;margin:0 auto}
+.flip .f{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.3,1.4,.5,1)}
+.flip.open .f{transform:rotateY(180deg)}
+.flip .face{position:absolute;inset:0;backface-visibility:hidden;display:grid;place-items:center;border-radius:50%}
+.flip .back{background:var(--ball);font-family:"Jua",sans-serif;font-size:90px;color:#fff;box-shadow:0 0 0 6px rgba(255,255,255,.15)}
+.flip .front{transform:rotateY(180deg)}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.confetti i{position:absolute;top:-20px;width:9px;height:14px;border-radius:2px;animation:fall 2.6s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+@media (prefers-reduced-motion:reduce){.flip .f{transition:none}.confetti{display:none}}
+
+/* parent */
+.ptop{background:var(--navy);color:#fff;padding:18px 16px 20px}
+.ptop .in{max-width:620px;margin:0 auto}
+.pwrap{max-width:620px;margin:0 auto;padding:16px 16px 40px}
+.pstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.pstats div{background:rgba(255,255,255,.08);border-radius:14px;padding:10px 8px}
+.pstats b{display:block;font-family:"Jua",sans-serif;font-weight:400;font-size:22px;line-height:1.15}
+.pstats span{font-size:11px;opacity:.75;font-weight:700}
+.mcal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.mc{border:0;background:none;aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--ink-3);gap:1px;padding:0}
+.mc .e{font-size:15px;line-height:1}
+.mc.has{color:var(--ink);background:var(--surface-2)}
+.mc.pf{background:#FFF2C2;color:#6B5200}
+[data-theme="dark"] .mc.pf{background:#3E3412;color:var(--gold)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mc.pf{background:#3E3412;color:var(--gold)}}
+.mc.part{box-shadow:inset 0 0 0 1.5px var(--ball)}
+.mc.sel{box-shadow:inset 0 0 0 2.5px var(--ink)}
+.pq{padding:14px 0;border-top:1px solid var(--line)}
+.pq:first-child{border-top:0}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl td{padding:4px 0;vertical-align:top}
+.tbl td:first-child{color:var(--ink-2);width:64px;font-weight:700}
+.tag{font-size:12px;font-weight:800;padding:2px 8px;border-radius:6px}
+.tag.ok{background:var(--ok-soft);color:var(--ok)} .tag.bad{background:var(--bad-soft);color:var(--bad)}
+.demo{background:var(--gold);color:#3D2E00;font-size:13px;font-weight:800;text-align:center;padding:7px 12px;position:sticky;top:env(safe-area-inset-top,0px);z-index:30}
+.demo button{border:0;background:rgba(0,0,0,.12);border-radius:8px;padding:2px 8px;margin-left:8px;font-weight:800}
+
+/* chooser */
+.choose{min-height:100%;display:flex;flex-direction:column;justify-content:center;max-width:460px;margin:0 auto;padding:24px 18px}
+.pick{display:flex;align-items:center;gap:14px;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:22px;padding:18px;margin-top:12px;width:100%}
+.pick .ico{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-size:30px;flex:none}
+
+.codein{width:100%;font:inherit;font-size:18px;padding:14px 16px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--ink);margin-top:14px}
+.codein:focus{outline:none;border-color:var(--ball)}
+.warn{background:var(--bad-soft);color:var(--bad);border-radius:14px;padding:12px 14px;font-size:14px;font-weight:700;margin-bottom:12px}
+.warn button{border:0;background:var(--bad);color:#fff;border-radius:8px;padding:4px 10px;margin-top:8px;font-weight:800}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="firebase-config.js"></script>
+<script src="units.js"></script>
+<script>
+/* ================= 오늘의 5문제 ================= */
+const ANIMALS = [
+ // 강아지 14
+ ['dog','강아지','🐶','#FFE1B8'],['jindo','진돗개','🐕','#F7D9A8'],['corgi','웰시코기','🐕','#FFD0A1'],['shiba','시바견','🐕','#FFC9A3'],
+ ['pome','포메라니안','🐶','#FFE3C2'],['golden','골든 리트리버','🦮','#FBDDA0'],['poodle','푸들','🐩','#F3D1C2'],['bichon','비숑','🐩','#EDEFF5'],
+ ['maltese','말티즈','🐶','#F2ECE4'],['dachs','닥스훈트','🐕','#E9CBB0'],['husky','허스키','🐺','#D9E1EC'],['border','보더콜리','🐕','#DCE3E8'],
+ ['beagle','비글','🐶','#F5D7B7'],['chihua','치와와','🐶','#FAE0CB'],
+ // 고양이 14
+ ['cat','고양이','🐱','#FFE9A8'],['siamese','샴','🐈','#EADFCF'],['munchkin','먼치킨','🐱','#FFDCC7'],['persian','페르시안','🐱','#F2E7F5'],
+ ['russian','러시안블루','🐈','#D5DFEE'],['fold','스코티시폴드','🐱','#E5E3F4'],['maine','메인쿤','🐈','#E7D6BF'],['ragdoll','랙돌','🐱','#E2ECF7'],
+ ['bengal','벵갈','🐈','#F8D8A8'],['norway','노르웨이숲','🐈','#DCE8DA'],['abyssin','아비시니안','🐈','#F3CFAE'],['british','브리티시숏헤어','🐱','#DDE3EA'],
+ ['angora','터키시앙고라','🐱','#F4F1F8'],['black','검은 고양이','🐈‍⬛','#E3E0F2'],
+ // 그 밖의 동물 42
+ ['duck','오리','🦆','#DFF0D2'],['raccoon','너구리','🦝','#E2DED7'],['fox','여우','🦊','#FFD3B0'],['rabbit','토끼','🐰','#FBE3EC'],
+ ['hamster','햄스터','🐹','#FCE6C9'],['panda','판다','🐼','#E6EBE6'],['koala','코알라','🐨','#E1E6EC'],['tiger','호랑이','🐯','#FFDCA8'],
+ ['lion','사자','🦁','#FBE3A4'],['penguin','펭귄','🐧','#D7E8F6'],['otter','수달','🦦','#E9DACB'],['hedgehog','고슴도치','🦔','#EEDCC8'],
+ ['squirrel','다람쥐','🐿️','#F5D9BC'],['bear','곰','🐻','#EBD3BC'],['polar','북극곰','🐻‍❄️','#E3F0F8'],['giraffe','기린','🦒','#FBE8B5'],
+ ['elephant','코끼리','🐘','#DDE4EC'],['zebra','얼룩말','🦓','#E8E8EE'],['kangaroo','캥거루','🦘','#F2DBC4'],['sloth','나무늘보','🦥','#E3E8D2'],
+ ['owl','부엉이','🦉','#EBDDCB'],['parrot','앵무새','🦜','#D6F0DC'],['flamingo','플라밍고','🦩','#FCD9E3'],['dolphin','돌고래','🐬','#D3EAF7'],
+ ['whale','고래','🐳','#D2E5F7'],['turtle','거북','🐢','#DDF0D3'],['frog','개구리','🐸','#DCF3CE'],['monkey','원숭이','🐵','#F0DCC7'],
+ ['gorilla','고릴라','🦍','#E1DEE4'],['hippo','하마','🦛','#E5DFEC'],['rhino','코뿔소','🦏','#E2E5E8'],['camel','낙타','🐫','#F6E2C0'],
+ ['deer','사슴','🦌','#F0DCC4'],['horse','말','🐴','#EEDCCD'],['sheep','양','🐑','#F2F0EA'],['pig','돼지','🐷','#FDDDE3'],
+ ['chick','병아리','🐥','#FFF2B3'],['peacock','공작','🦚','#D3EEE6'],['swan','백조','🦢','#EAF1F8'],['octopus','문어','🐙','#FBD8DA'],
+ ['shark','상어','🦈','#D6E3EF'],['beaver','비버','🦫','#EAD7C4']
+].map(([id,name,em,bg])=>({id,name,em,bg}));
+const A = ANIMALS;
+const AM = Object.fromEntries(A.map(a=>[a.id,a]));
+
+/* ---------- 단원 (units.js) ---------- */
+const U = (window.UNITS||[]).map(u=>{
+  const unit={id:u.id,name:u.name,grade:u.grade||'',pool:(u.pool||[]).filter(id=>AM[id])};
+  unit.basic=(u.basic||[]).map((p,i)=>({id:u.id+'b'+(i+1),lv:'basic',q:p[0],a:String(p[1]),u:p[2]||'',unit:u.id}));
+  unit.mm=(u.mm||[]).map((p,i)=>({id:u.id+'m'+(i+1),lv:'mm',q:p[0],a:String(p[1]),u:p[2]||'',unit:u.id}));
+  if(unit.pool.length===0) unit.pool=A.slice(0,20).map(a=>a.id);
+  return unit;
+});
+const PM={}; U.forEach(u=>[...u.basic,...u.mm].forEach(p=>PM[p.id]=p));
+const unitDays=ui=>U[ui]?Math.min(Math.floor(U[ui].basic.length/3),Math.floor(U[ui].mm.length/2)):0;
+function dayProblems(ui,seq){const u=U[ui];return [u.basic[seq*3],u.basic[seq*3+1],u.basic[seq*3+2],u.mm[seq*2],u.mm[seq*2+1]]}
+
+/* ---------- 날짜 ---------- */
+const pad2=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+const parseYmd=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
+const WD=['일','월','화','수','목','금','토'];
+const korDate=s=>{const d=parseYmd(s);return (d.getMonth()+1)+'월 '+d.getDate()+'일 '+WD[d.getDay()]+'요일'};
+const shortDate=s=>{const d=parseYmd(s);return (d.getMonth()+1)+'월 '+d.getDate()+'일'};
+const fmtSec=s=>{s=Math.round(s||0);const m=Math.floor(s/60),r=s%60;return m?m+'분 '+pad2(r)+'초':r+'초'};
+const TODAY=()=>ymd(new Date());
+
+/* ---------- 기기 저장 ---------- */
+const K_FAMILY='math5:family', K_MODE='math5:mode';
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const lsSet=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+let FAMILY=lsGet(K_FAMILY);
+const stateKey=()=>'math5:state:'+FAMILY;
+function blank(){return {v:1,unit:0,days:{},wrong:{}}}
+function normalize(s){s=s&&typeof s==='object'?s:blank();s.days=s.days||{};s.wrong=s.wrong||{};s.unit=Math.max(0,Math.min(s.unit||0,Math.max(0,U.length-1)));return s}
+function readLocal(){try{const s=localStorage.getItem(stateKey());return s?normalize(JSON.parse(s)):blank()}catch(e){return blank()}}
+function writeLocal(s){try{localStorage.setItem(stateKey(),JSON.stringify(s))}catch(e){}}
+let S=FAMILY?readLocal():blank();
+
+/* ---------- Firebase 연결 ---------- */
+const FB_VER='10.12.2';
+let FS=null, syncState='connecting';
+async function connect(){
+  if(!FAMILY) return;
+  if(!window.FIREBASE_CONFIG){syncState='offline';return render()}
+  try{
+    const appm=await import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-app.js`);
+    const fs=await import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-firestore.js`);
+    const app=appm.getApps().length?appm.getApp():appm.initializeApp(window.FIREBASE_CONFIG);
+    let db;try{db=fs.initializeFirestore(app,{localCache:fs.persistentLocalCache()})}catch(e){db=fs.getFirestore(app)}
+    const ref=fs.doc(db,'families',FAMILY,'data','progress');
+    FS={fs,ref};
+    fs.onSnapshot(ref,{includeMetadataChanges:true},snap=>{
+      const md=snap.metadata;
+      syncState=md.hasPendingWrites?'pending':(md.fromCache?'offline':'shared');
+      if(!snap.exists()){ if(Object.keys(S.days).length&&route()==='kid') pushRemote(); render(); return; }
+      try{
+        const r=normalize(JSON.parse(snap.data().json));
+        if(!S.updatedAt||(r.updatedAt||0)>=S.updatedAt){S=r;writeLocal(S)}
+      }catch(e){}
+      render();
+    },err=>{syncState=(err&&err.code==='permission-denied')?'denied':'offline';render()});
+  }catch(e){syncState='offline';render()}
+}
+function pushRemote(){
+  if(!FS) return;
+  FS.fs.setDoc(FS.ref,{json:JSON.stringify(S),updatedAt:S.updatedAt||Date.now()}).catch(err=>{if(err&&err.code==='permission-denied'){syncState='denied';render()}});
+}
+function save(){S.updatedAt=Date.now();writeLocal(S);pushRemote()}
+
+/* ---------- 파생 ---------- */
+function ownedMap(st){const o={};Object.values(st.days).forEach(d=>{if(d.animal&&AM[d.animal]){o[d.animal]=o[d.animal]||{n:0,gold:false};o[d.animal].n++;if(d.perfect)o[d.animal].gold=true}});return o}
+function doneInUnit(st,ui){return Object.values(st.days).filter(d=>d.u===ui&&d.done).length}
+function curUnit(){let u=Math.min(S.unit,U.length-1);while(u+1<U.length&&doneInUnit(S,u)>=unitDays(u))u++;return Math.max(0,u)}
+function streak(st){let n=0;const d=new Date();if(!(st.days[ymd(d)]||{}).done)d.setDate(d.getDate()-1);while((st.days[ymd(d)]||{}).done){n++;d.setDate(d.getDate()-1)}return n}
+function firstDay(st){const k=Object.keys(st.days).sort();return k[0]||TODAY()}
+function ensureToday(){
+  const t=TODAY();if(S.days[t])return S.days[t];
+  S.unit=curUnit();const seq=doneInUnit(S,S.unit);
+  if(seq>=unitDays(S.unit))return null;
+  S.days[t]={u:S.unit,seq,items:[],done:false,perfect:false,animal:null};
+  return S.days[t];
+}
+function num(s){if(/^\d+\/\d+$/.test(s)){const[p,q]=s.split('/').map(Number);return q?p/q:null}if(/^\d*\.?\d+$/.test(s))return Number(s);return null}
+function checkAns(input,ans){
+  const clean=x=>String(x).replace(/\s|,/g,'');const a=clean(input),b=clean(ans);if(!a)return false;
+  if(b.includes(':')){const pa=a.split(':'),pb=b.split(':');return pa.length===pb.length&&pa.every((v,i)=>num(v)!==null&&num(v)===num(pb[i]))}
+  const x=num(a),y=num(b);return x!==null&&y!==null&&Math.abs(x-y)<1e-9;
+}
+function pickAnimal(ui){const pool=U[ui].pool,own=ownedMap(S);const fresh=pool.filter(id=>!own[id]);const src=fresh.length?fresh:pool;return src[Math.floor(Math.random()*src.length)]}
+const lvChip=p=>`<span class="chip ${p.lv}">${p.lv==='mm'?'Math Master':'기본'}</span>`;
+const josa=w=>{const c=w.charCodeAt(w.length-1)-44032;return c>=0&&c<11172&&c%28?'을':'를'};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- 공통 ---------- */
+function stk(id,size,opt={}){
+  const a=AM[id];if(!a)return '';const sil=opt.sil,g=opt.gold&&!sil;
+  return `<div class="stk ${sil?'sil':''} ${g?'gold':''}" style="width:${size}px;height:${size}px;background:${a.bg};font-size:${size*.56}px"><span class="em">${a.em}</span>${g?'<span class="ball">🏀</span>':''}</div>`;
+}
+const $=s=>document.querySelector(s);
+let ui={tab:'today',input:'',qStart:null,fb:null,started:false,calM:null,dex:'unit',wsort:'count',wfilter:'open',retry:null,reveal:null,pSel:null,pTab:'day',pM:null,pSort:'count'};
+function route(){return (location.hash||'').replace('#','')}
+function render(){
+  if(!FAMILY) return renderCode();
+  if(!U.length) {$('#app').innerHTML='<div class="choose"><div class="warn">units.js 파일을 불러오지 못했어요. GitHub에 units.js가 올라가 있는지 확인해 주세요.</div></div>';return}
+  const r=route();
+  if(r==='kid') return renderKid();
+  if(r==='parent') return renderParent();
+  renderChooser();
+}
+window.addEventListener('hashchange',()=>{render();scrollTo(0,0)});
+function deniedBox(){return syncState==='denied'?`<div class="warn">가족 코드가 Firebase 보안 규칙의 코드와 달라서 기록을 주고받지 못하고 있어요. 이 기기에는 계속 저장돼요.<br><button id="fixCode">가족 코드 다시 입력</button></div>`:''}
+function bindDenied(){const b=$('#fixCode');if(b)b.onclick=()=>{FAMILY=null;lsSet(K_FAMILY,null);location.reload()}}
+
+/* ---------- 가족 코드 입력 ---------- */
+function renderCode(){
+  $('#app').innerHTML=`<div class="choose">
+    <div style="font-size:44px">🏀</div>
+    <div class="disp" style="font-size:32px;line-height:1.2;margin-top:6px">오늘의 5문제</div>
+    <p class="muted" style="margin:8px 0 0">가족 코드를 입력하세요. 아이 폰과 부모 폰에 같은 코드를 넣어야 기록이 연결돼요. 처음 한 번만 입력하면 돼요.</p>
+    <input class="codein" id="codeIn" type="text" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="가족 코드">
+    <button class="btn" id="codeSave" style="margin-top:12px" disabled>저장하고 시작</button>
+  </div>`;
+  const inp=$('#codeIn'),btn=$('#codeSave');
+  inp.oninput=()=>{btn.disabled=inp.value.trim().length<6};
+  const go=()=>{const v=inp.value.trim();if(v.length<6)return;FAMILY=v;lsSet(K_FAMILY,v);S=readLocal();syncState='connecting';render();connect()};
+  btn.onclick=go;inp.onkeydown=e=>{if(e.key==='Enter')go()};
+}
+
+/* ---------- 앱 선택 ---------- */
+function renderChooser(){
+  $('#app').innerHTML=`<div class="choose">
+    <div class="disp" style="font-size:34px;line-height:1.2">오늘의 5문제</div>
+    <p class="muted" style="margin:6px 0 10px">이 기기에서 사용할 앱을 고르세요. 한 번 고르면 다음부터 바로 열려요.</p>
+    <button class="pick" data-go="kid"><span class="ico" style="background:var(--ball-soft)">🏀</span><span><b class="disp" style="font-size:21px;font-weight:400">아이 앱</b><br><span class="muted small">문제 풀기, 스티커 달력, 다시풀기, 동물도감</span></span></button>
+    <button class="pick" data-go="parent"><span class="ico" style="background:var(--surface-2)">📋</span><span><b class="disp" style="font-size:21px;font-weight:400">부모 앱</b><br><span class="muted small">날짜별 풀이 현황, 풀이 시간, 오답 기록</span></span></button>
+  </div>`;
+  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{lsSet(K_MODE,b.dataset.go);location.hash=b.dataset.go});
+}
+
+/* ================= 아이 앱 ================= */
+function renderKid(){
+  const own=ownedMap(S);const retryOpen=Object.entries(S.wrong).filter(([pid,w])=>PM[pid]&&!w.fixed).length;
+  let body=ui.tab==='today'?kidToday():ui.tab==='cal'?kidCal():ui.tab==='retry'?kidRetry():kidDex(own);
+  const tabs=[['today','📝','오늘'],['cal','📅','달력'],['retry','🔁','다시풀기'],['dex','🐾','동물도감']];
+  $('#app').innerHTML=`<div class="wrap">${deniedBox()}${body}</div>
+  <nav class="nav"><div class="in">${tabs.map(t=>`<button class="${ui.tab===t[0]?'on':''}" data-tab="${t[0]}"><span class="ic">${t[1]}</span>${t[2]}${t[0]==='retry'&&retryOpen?'<span class="dot"></span>':''}</button>`).join('')}</div></nav>
+  ${ui.retry?retrySheet():''}${ui.reveal?revealHTML():''}`;
+  bindDenied();
+  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{ui.tab=b.dataset.tab;ui.retry=null;render();scrollTo(0,0)});
+  bindKid();
+}
+function syncBadge(){
+  return {shared:'<span class="chip">🔗 연결됨</span>',pending:'<span class="chip">⏳ 보내는 중</span>',offline:'<span class="chip">📴 오프라인 저장</span>',connecting:'<span class="chip">연결 중</span>',denied:'<span class="chip">⚠️ 연결 안 됨</span>'}[syncState]||'';
+}
+function kidToday(){
+  const t=TODAY();const day=S.days[t];const ui0=day?day.u:curUnit();const u=U[ui0];const nDays=unitDays(ui0);
+  const seqDone=doneInUnit(S,ui0);
+  if(!day&&seqDone>=nDays){
+    return `<div class="hero"><div class="court"></div><div class="court2"></div><div class="small" style="opacity:.8">${esc(u.grade)}</div><h1 class="disp">${esc(u.name)}<br>모든 문제를 끝냈어요</h1><p style="opacity:.85;margin:10px 0 0">다음 단원 문제가 곧 도착해요. 그동안 다시풀기에서 틀렸던 문제를 정리해 봐요.</p></div>`;
+  }
+  const seq=day?day.seq:seqDone;
+  const header=`<div class="row" style="margin:2px 0 12px"><div><div class="disp" style="font-size:24px">${korDate(t)}</div><div class="muted small">${esc(u.name)} ${seq+1}일째 / ${nDays}일</div></div><div class="sp"></div>${syncBadge()}</div>`;
+  if(!day||(!day.items.length&&!ui.started)){
+    const own=ownedMap(S);
+    return header+`<div class="hero"><div class="court"></div><div class="court2"></div>
+      <div class="small" style="opacity:.8">오늘의 경기</div>
+      <h1 class="disp">5문제를 풀면<br>새 친구가 나타나요</h1>
+      <div class="plan"><span>기본</span><span>기본</span><span>기본</span><span class="m">MM</span><span class="m">MM</span></div>
+      <p class="small" style="opacity:.8;margin:12px 0 0">5문제 모두 맞히면 금빛 테두리와 농구공 스티커가 돼요.</p></div>
+    <div class="card" style="margin-top:14px"><div class="row"><b>이번 단원에서 만날 수 있는 동물</b><span class="sp"></span><span class="muted small">${u.pool.filter(id=>own[id]).length}/${u.pool.length}</span></div>
+      <div class="preview">${u.pool.map(id=>stk(id,52,{sil:!own[id],gold:own[id]&&own[id].gold})).join('')}</div>
+      <div class="muted small">아직 못 만난 동물이 먼저 나와요. 오늘은 누가 나올까요?</div></div>
+    <button class="btn" id="startToday" style="margin-top:16px">오늘의 5문제 시작</button>`;
+  }
+  const ps=dayProblems(day.u,day.seq);
+  const dots=`<div class="dots">${ps.map((p,i)=>{const it=day.items[i];return `<i class="${it?(it.ok?'ok':'bad'):(i===day.items.length?'cur':'')}"></i>`}).join('')}</div>`;
+  if(day.done&&!ui.fb){
+    const a=AM[day.animal];const tot=day.items.reduce((s,x)=>s+x.sec,0);const nOk=day.items.filter(x=>x.ok).length;
+    return header+`<div class="card" style="text-align:center;padding:24px 18px">
+      <div style="display:flex;justify-content:center">${stk(day.animal,120,{gold:day.perfect})}</div>
+      <div class="disp" style="font-size:26px;margin-top:14px">${day.perfect?'5문제 모두 정답!':'오늘 5문제 완료!'}</div>
+      <div class="muted">${a?a.name+josa(a.name):'스티커를'} 달력에 붙였어요</div>
+      <div class="row" style="justify-content:center;gap:18px;margin-top:14px"><div><b class="disp" style="font-size:22px;font-weight:400">${nOk}/5</b><div class="muted small">정답</div></div><div><b class="disp" style="font-size:22px;font-weight:400">${fmtSec(tot)}</b><div class="muted small">걸린 시간</div></div></div></div>
+    <div class="card" style="margin-top:12px">${day.items.map(x=>{const p=PM[x.pid];if(!p)return '';return `<div class="resline"><span class="mk ${x.ok?'ok':'bad'}">${x.ok?'O':'X'}</span><div class="sp">${lvChip(p)}<div class="small clamp" style="margin-top:4px">${esc(p.q)}</div></div><span class="timer">${fmtSec(x.sec)}</span></div>`}).join('')}</div>
+    ${day.items.some(x=>!x.ok)?`<button class="btn ghost" data-tab="retry" style="margin-top:12px">틀린 문제 다시 풀러 가기</button>`:''}
+    <p class="muted small" style="text-align:center;margin-top:16px">내일도 5문제가 기다려요</p>`;
+  }
+  const idx=ui.fb?ui.fb.idx:day.items.length;const p=ps[idx];
+  let main=`<div class="card"><div class="row">${dots}<span class="sp"></span><span class="timer" id="tick">${ui.fb?fmtSec(day.items[idx].sec):'0초'}</span></div>
+    <div class="row" style="margin-top:14px">${lvChip(p)}<span class="muted small">${idx+1}번째 문제</span></div>
+    <div class="q">${esc(p.q)}</div>`;
+  if(ui.fb){
+    const ok=ui.fb.ok;
+    main+=`<div class="ansbox"><span class="v">${esc(day.items[idx].ans)}</span><span class="u">${esc(p.u)}</span></div>
+    <div class="fb ${ok?'ok':'bad'}"><div class="big">${ok?'정답이에요!':'아쉬워요'}</div><div class="small" style="color:var(--ink-2)">${ok?'풀이 시간 '+fmtSec(day.items[idx].sec):'오답모음에 담았어요. 다시풀기에서 한 번 더 도전해요.'}</div></div>
+    <button class="btn" id="nextQ" style="margin-top:14px">${day.done?'스티커 받기 🎁':'다음 문제'}</button></div>`;
+  }else{
+    main+=`<div class="ansbox focus"><span class="v ${ui.input?'':'ph'}">${ui.input||'답을 입력해요'}</span><span class="u">${esc(p.u)}</span></div>
+    ${padHTML()}
+    <div class="muted small" style="margin-top:10px">제출 전에 문제에서 무엇을 구하는지 한 번 더 읽어 봐요.</div>
+    <button class="btn" id="submitQ" style="margin-top:10px" ${ui.input?'':'disabled'}>정답 확인</button></div>`;
+  }
+  return header+main;
+}
+function padHTML(){const k=['1','2','3','⌫','4','5','6',':','7','8','9','/','.','0','00','C'];return `<div class="pad">${k.map(x=>`<button data-k="${x}" class="${/\d/.test(x)?'':'sym'}" aria-label="${x==='⌫'?'지우기':x==='C'?'모두 지우기':x}">${x}</button>`).join('')}</div>`}
+function bindPad(){document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const k=b.dataset.k;let v=ui.input;if(k==='⌫')v=v.slice(0,-1);else if(k==='C')v='';else if(v.length<10)v+=k;ui.input=v;render()})}
+let tickTimer=null;
+function bindKid(){
+  clearInterval(tickTimer);
+  const st=$('#startToday');if(st)st.onclick=()=>{if(!ensureToday())return render();ui.started=true;ui.qStart=Date.now();ui.input='';save();render()};
+  if(ui.tab==='today'&&$('#submitQ')){
+    if(!ui.qStart)ui.qStart=Date.now();
+    const tk=$('#tick');const upd=()=>{if(tk)tk.textContent=fmtSec((Date.now()-ui.qStart)/1000)};upd();tickTimer=setInterval(upd,1000);
+    bindPad();$('#submitQ').onclick=submitToday;
+  }
+  const nx=$('#nextQ');if(nx)nx.onclick=()=>{const day=S.days[TODAY()];const wasDone=day.done;ui.fb=null;ui.input='';ui.qStart=Date.now();if(wasDone)ui.reveal={id:day.animal,gold:day.perfect,open:false};render();if(wasDone)setTimeout(()=>{if(ui.reveal){ui.reveal.open=true;render()}},450)};
+  document.querySelectorAll('.wrap [data-tab]').forEach(b=>b.onclick=()=>{ui.tab=b.dataset.tab;render();scrollTo(0,0)});
+  const cp=$('#calPrev'),cn=$('#calNext');if(cp)cp.onclick=()=>{ui.calM.setMonth(ui.calM.getMonth()-1);render()};if(cn)cn.onclick=()=>{ui.calM.setMonth(ui.calM.getMonth()+1);render()};
+  const goT=$('#calToday');if(goT)goT.onclick=()=>{ui.tab='today';render()};
+  document.querySelectorAll('[data-dex]').forEach(b=>b.onclick=()=>{ui.dex=b.dataset.dex;render()});
+  document.querySelectorAll('[data-ws]').forEach(b=>b.onclick=()=>{ui.wsort=b.dataset.ws;render()});
+  document.querySelectorAll('[data-wf]').forEach(b=>b.onclick=()=>{ui.wfilter=b.dataset.wf;render()});
+  document.querySelectorAll('[data-wid]').forEach(b=>b.onclick=()=>{ui.retry={pid:b.dataset.wid,res:null,show:false};ui.input='';render()});
+  if(ui.retry){
+    const close=()=>{ui.retry=null;ui.input='';render()};
+    document.querySelectorAll('.rClose').forEach(b=>b.onclick=close);
+    $('.ov').onclick=e=>{if(e.target.classList.contains('ov'))close()};
+    if($('#rSubmit')){bindPad();$('#rSubmit').onclick=submitRetry}
+    const ag=$('#rAgain');if(ag)ag.onclick=()=>{ui.retry.res=null;ui.input='';render()};
+    const sh=$('#rShow');if(sh)sh.onclick=()=>{ui.retry.show=true;render()};
+  }
+  if(ui.reveal){const d=$('#revealDone');if(d)d.onclick=()=>{ui.reveal=null;render()}}
+}
+function submitToday(){
+  const day=S.days[TODAY()];if(!day)return;const ps=dayProblems(day.u,day.seq);const idx=day.items.length;const p=ps[idx];if(!p)return;
+  const ok=checkAns(ui.input,p.a);const sec=Math.max(1,Math.round((Date.now()-ui.qStart)/1000));
+  day.items.push({pid:p.id,ans:ui.input,ok,sec});
+  if(!ok){const w=S.wrong[p.id]||{count:0,first:TODAY()};w.count++;w.fixed=false;w.last=TODAY();S.wrong[p.id]=w}
+  if(day.items.length===5){day.done=true;day.perfect=day.items.every(x=>x.ok);day.animal=pickAnimal(day.u);day.doneAt=Date.now()}
+  ui.fb={idx,ok};save();render();
+}
+function revealHTML(){
+  const a=AM[ui.reveal.id];if(!a)return '';const g=ui.reveal.gold,open=ui.reveal.open;
+  const colors=['#F26B1D','#F2B705','#1F9D5C','#4C7DF0','#E0464B','#fff'];
+  const conf=open?`<div class="confetti">${Array.from({length:g?60:30},(_,i)=>`<i style="left:${(i*37)%100}%;background:${colors[i%6]};animation-delay:${(i%10)*.12}s"></i>`).join('')}</div>`:'';
+  return `<div class="reveal">${conf}<div style="position:relative">
+    <div class="small" style="opacity:.75">${g?'5문제 모두 정답! 골든 스티커':'오늘의 5문제 완료'}</div>
+    <div class="flip ${open?'open':''}" style="margin-top:18px"><div class="f"><div class="face back">?</div><div class="face front">${stk(a.id,200,{gold:g})}</div></div></div>
+    <div class="disp" style="font-size:32px;margin-top:22px;opacity:${open?1:0};transition:opacity .4s .5s">${a.name}</div>
+    <div style="opacity:${open?.8:0};transition:opacity .4s .7s">달력에 스티커를 붙였어요</div>
+    <button class="btn" id="revealDone" style="margin-top:24px;max-width:260px;opacity:${open?1:0};transition:opacity .4s .9s">확인</button></div></div>`;
+}
+function kidCal(){
+  if(!ui.calM){const d=new Date();ui.calM=new Date(d.getFullYear(),d.getMonth(),1)}
+  const y=ui.calM.getFullYear(),m=ui.calM.getMonth();const first=new Date(y,m,1).getDay(),nd=new Date(y,m+1,0).getDate();
+  const t=TODAY(),start=firstDay(S);let cells='';for(let i=0;i<first;i++)cells+='<div class="cell empty"></div>';
+  let monthDone=0,monthPerfect=0;
+  for(let d=1;d<=nd;d++){
+    const k=y+'-'+pad2(m+1)+'-'+pad2(d);const rec=S.days[k];
+    if(rec&&rec.done){monthDone++;if(rec.perfect)monthPerfect++;cells+=`<div class="cell done ${rec.perfect?'perfect':''}"><span class="n">${d}</span>${stk(rec.animal,34,{gold:rec.perfect})}</div>`}
+    else if(k===t)cells+=`<button class="cell today" id="calToday"><span class="n">${d}</span><span class="go">오늘</span></button>`;
+    else if(k<t&&k>=start)cells+=`<div class="cell miss"><span class="n">${d}</span><span class="paw">🐾</span></div>`;
+    else cells+=`<div class="cell ${k>t?'future':'miss'}" ${k<start?'style="border-color:transparent;opacity:.35"':''}><span class="n">${d}</span></div>`;
+  }
+  const now=new Date(),isCur=y===now.getFullYear()&&m===now.getMonth();
+  return `<div class="row" style="margin-bottom:12px"><button class="btn small ghost" id="calPrev" aria-label="이전 달">‹</button><div class="sp disp" style="text-align:center;font-size:24px">${y}년 ${m+1}월</div><button class="btn small ghost" id="calNext" aria-label="다음 달" ${isCur?'disabled':''}>›</button></div>
+  <div class="stats" style="margin-bottom:14px"><div class="stat"><b>${monthDone}</b><span>이번 달 완료</span></div><div class="stat"><b>${streak(S)}일</b><span>연속 기록</span></div><div class="stat"><b style="color:var(--gold)">${monthPerfect}</b><span>🏀 다 맞힌 날</span></div></div>
+  <div class="card" style="padding:12px"><div class="cal">${WD.map((w,i)=>`<div class="wd ${i===0?'sun':''}">${w}</div>`).join('')}${cells}</div></div>
+  <p class="muted small" style="text-align:center;margin-top:12px">점선 칸은 아직 비어 있는 날이에요. 5문제를 풀면 동물 스티커로 채워져요.</p>`;
+}
+function wrongList(){return Object.entries(S.wrong).map(([pid,w])=>({pid,...w,p:PM[pid]})).filter(x=>x.p)}
+function kidRetry(){
+  let list=wrongList();const all=list.length,open=list.filter(x=>!x.fixed).length;
+  if(ui.wfilter==='open')list=list.filter(x=>!x.fixed);
+  list.sort(ui.wsort==='count'?(a,b)=>b.count-a.count||((b.last||'')>(a.last||'')?1:-1):(a,b)=>((b.last||'')>(a.last||'')?1:(b.last||'')<(a.last||'')?-1:b.count-a.count));
+  return `<div class="disp" style="font-size:26px">다시풀기</div><div class="muted small">틀린 문제 ${all}개 중 ${open}개가 아직 남았어요</div>
+  <div class="row" style="margin:14px 0 10px;flex-wrap:wrap"><div class="seg"><button data-wf="open" class="${ui.wfilter==='open'?'on':''}">남은 문제</button><button data-wf="all" class="${ui.wfilter==='all'?'on':''}">전체</button></div><span class="sp"></span>
+  <div class="seg"><button data-ws="count" class="${ui.wsort==='count'?'on':''}">많이 틀린 순</button><button data-ws="recent" class="${ui.wsort==='recent'?'on':''}">최근 순</button></div></div>
+  <div class="card" style="padding:4px 16px">${list.length?list.map(x=>`<button class="wl ${x.fixed?'fixed':''}" data-wid="${x.pid}"><div class="cnt"><b>${x.fixed?'✓':x.count}</b><span>${x.fixed?'해결':'번 틀림'}</span></div><div class="sp"><div class="row">${lvChip(x.p)}<span class="muted small">${x.last?shortDate(x.last):''}</span>${x.fixed?`<span class="muted small">틀린 횟수 ${x.count}</span>`:''}</div><div class="clamp small" style="margin-top:6px">${esc(x.p.q)}</div></div></button>`).join(''):`<div style="padding:28px 0;text-align:center"><div style="font-size:36px">🏀</div><b>남은 오답이 없어요</b><div class="muted small">오늘의 5문제에서 틀린 문제가 여기에 모여요</div></div>`}</div>`;
+}
+function retrySheet(){
+  const r=ui.retry,w=S.wrong[r.pid],p=PM[r.pid];if(!w||!p)return '';
+  let inner=`<div class="row">${lvChip(p)}<span class="muted small">지금까지 ${w.count}번 틀렸어요</span><span class="sp"></span><button class="btn small ghost rClose">닫기</button></div><div class="q">${esc(p.q)}</div>`;
+  if(r.res==='ok')inner+=`<div class="fb ok"><div class="big">해결했어요!</div><div class="small" style="color:var(--ink-2)">정답 ${esc(p.a)} ${esc(p.u)}</div></div><button class="btn rClose" style="margin-top:12px">목록으로</button>`;
+  else if(r.res==='bad')inner+=`<div class="fb bad"><div class="big">한 번 더 생각해 봐요</div><div class="small" style="color:var(--ink-2)">조건을 하나씩 다시 읽어 보면 실마리가 보여요</div></div>${r.show?`<div class="card" style="margin-top:10px;text-align:center">정답은 <b class="disp" style="font-size:22px;font-weight:400">${esc(p.a)} ${esc(p.u)}</b></div>`:''}<div class="row" style="margin-top:12px"><button class="btn" id="rAgain">다시 도전</button>${w.count>=3&&!r.show?'<button class="btn ghost" id="rShow">정답 보기</button>':''}</div>`;
+  else inner+=`<div class="ansbox focus"><span class="v ${ui.input?'':'ph'}">${ui.input||'답을 입력해요'}</span><span class="u">${esc(p.u)}</span></div>${padHTML()}<button class="btn" id="rSubmit" style="margin-top:12px" ${ui.input?'':'disabled'}>정답 확인</button>`;
+  return `<div class="ov"><div class="sheet">${inner}</div></div>`;
+}
+function submitRetry(){
+  const r=ui.retry,p=PM[r.pid],w=S.wrong[r.pid];
+  if(checkAns(ui.input,p.a)){w.fixed=true;w.fixedAt=TODAY();r.res='ok'}else{w.count++;w.last=TODAY();w.fixed=false;r.res='bad'}
+  ui.input='';save();render();
+}
+function kidDex(own){
+  const total=A.length,got=Object.keys(own).length;const pool=U[curUnit()].pool;
+  const list=ui.dex==='unit'?pool.map(id=>AM[id]):A;
+  return `<div class="disp" style="font-size:26px">동물도감</div>
+  <div class="row" style="margin-top:6px"><div class="sp bar"><i style="width:${got/total*100}%"></i></div><b class="small">${got} / ${total}</b></div>
+  <div class="seg" style="margin:14px 0"><button data-dex="unit" class="${ui.dex==='unit'?'on':''}" style="flex:1">이번 단원 후보 ${pool.length}</button><button data-dex="all" class="${ui.dex==='all'?'on':''}" style="flex:1">전체 ${total}</button></div>
+  ${ui.dex==='unit'?`<p class="muted small" style="margin:-4px 0 14px">오늘 5문제를 풀면 이 중 한 마리가 나타나요. 아직 못 만난 친구가 먼저 나와요.</p>`:''}
+  <div class="card"><div class="dex">${list.map(a=>{const o=own[a.id];const cand=pool.includes(a.id);return `<div class="it ${cand&&!o?'cand':''}">${stk(a.id,62,{sil:!o,gold:o&&o.gold})}<div class="nm">${o?a.name:'???'}${o&&o.n>1?`<span class="muted"> ×${o.n}</span>`:''}</div></div>`}).join('')}</div></div>
+  ${ui.dex==='all'?`<p class="muted small" style="text-align:center;margin-top:12px">주황 테두리는 이번 단원에서 만날 수 있는 동물이에요</p>`:''}`;
+}
+
+/* ================= 부모 앱 ================= */
+function renderParent(){
+  const days=S.days,keys=Object.keys(days).sort();
+  const doneDays=keys.filter(k=>days[k].done);const items=keys.flatMap(k=>days[k].items);
+  const acc=items.length?Math.round(items.filter(x=>x.ok).length/items.length*100):0;
+  const avg=items.length?items.reduce((s,x)=>s+x.sec,0)/items.length:0;
+  const cu=curUnit(),u=U[cu];
+  if(!ui.pSel)ui.pSel=keys.length?keys[keys.length-1]:TODAY();
+  if(!ui.pM){const d=parseYmd(ui.pSel);ui.pM=new Date(d.getFullYear(),d.getMonth(),1)}
+  const badge={shared:'🔗 실시간',pending:'⏳ 동기화 중',offline:'📴 오프라인',connecting:'연결 중',denied:'⚠️ 연결 안 됨'}[syncState]||'';
+  const top=`<div class="ptop"><div class="in"><div class="row"><div><div class="small" style="opacity:.7">${esc(u.grade)} ${esc(u.name)}</div><div class="disp" style="font-size:26px">아이 학습 현황</div></div><span class="sp"></span><span class="chip" style="background:rgba(255,255,255,.12);color:#fff">${badge}</span></div>
+    <div class="pstats"><div><b>${doneInUnit(S,cu)}/${unitDays(cu)}</b><span>단원 진도(일)</span></div><div><b>${acc}%</b><span>정답률</span></div><div><b>${fmtSec(avg).replace(/ \d+초$/,'')}</b><span>문제당 평균</span></div><div><b>${doneDays.filter(k=>days[k].perfect).length}</b><span>🏀 다 맞힌 날</span></div></div></div></div>`;
+  const tabs=`<div class="seg" style="margin-bottom:14px"><button data-pt="day" class="${ui.pTab==='day'?'on':''}" style="flex:1">날짜별 현황</button><button data-pt="wrong" class="${ui.pTab==='wrong'?'on':''}" style="flex:1">단원별 오답</button></div>`;
+  $('#app').innerHTML=top+`<div class="pwrap">${deniedBox()}${tabs}${ui.pTab==='day'?parentDay():parentWrong()}
+    <div class="row" style="margin-top:22px;justify-content:center;flex-wrap:wrap"><button class="btn small ghost" id="toChooser">앱 선택 화면으로</button><button class="btn small ghost" id="chgCode">가족 코드 바꾸기</button></div>
+    <p class="muted small" style="text-align:center;margin-top:8px">단원 ${U.length}개 등록됨</p></div>`;
+  bindDenied();
+  $('#toChooser').onclick=()=>{lsSet(K_MODE,null);location.hash=''};
+  $('#chgCode').onclick=()=>{if(confirm('이 기기의 가족 코드를 지우고 다시 입력할까요? 기록은 지워지지 않아요.')){lsSet(K_FAMILY,null);location.hash='';location.reload()}};
+  document.querySelectorAll('[data-pt]').forEach(b=>b.onclick=()=>{ui.pTab=b.dataset.pt;render()});
+  document.querySelectorAll('[data-pd]').forEach(b=>b.onclick=()=>{ui.pSel=b.dataset.pd;render()});
+  document.querySelectorAll('[data-ps]').forEach(b=>b.onclick=()=>{ui.pSort=b.dataset.ps;render()});
+  const pp=$('#pPrev'),pn=$('#pNext');if(pp)pp.onclick=()=>{ui.pM.setMonth(ui.pM.getMonth()-1);render()};if(pn)pn.onclick=()=>{ui.pM.setMonth(ui.pM.getMonth()+1);render()};
+}
+function parentDay(){
+  const y=ui.pM.getFullYear(),m=ui.pM.getMonth();const first=new Date(y,m,1).getDay(),nd=new Date(y,m+1,0).getDate();const t=TODAY();
+  let cells='';for(let i=0;i<first;i++)cells+='<span></span>';
+  for(let d=1;d<=nd;d++){const k=y+'-'+pad2(m+1)+'-'+pad2(d);const r=S.days[k];
+    const cls=r?(r.done?(r.perfect?'has pf':'has'):(r.items.length?'part':'')):'';
+    cells+=`<button class="mc ${cls} ${ui.pSel===k?'sel':''}" data-pd="${k}" ${k>t?'disabled style="opacity:.35"':''}><span>${d}</span><span class="e">${r&&r.animal&&AM[r.animal]?AM[r.animal].em:(r&&r.items.length?'◐':'')}</span></button>`}
+  const r=S.days[ui.pSel];let detail;
+  if(!r||!r.items.length)detail=`<div class="card" style="text-align:center;padding:26px"><b>${korDate(ui.pSel)}</b><div class="muted small" style="margin-top:4px">이날은 푼 문제가 없어요</div></div>`;
+  else{
+    const nOk=r.items.filter(x=>x.ok).length,tot=r.items.reduce((s,x)=>s+x.sec,0);const ps=U[r.u]?dayProblems(r.u,r.seq):[];
+    detail=`<div class="card"><div class="row">${r.animal?stk(r.animal,56,{gold:r.perfect}):'<div class="stk" style="width:56px;height:56px;background:var(--surface-2);font-size:22px">⏳</div>'}<div class="sp"><b>${korDate(ui.pSel)}</b><div class="small muted">${U[r.u]?esc(U[r.u].name):''} ${r.seq+1}일째 세트</div><div class="small" style="margin-top:2px">5문제 중 <b>${r.items.length}</b>문제 풀이, <b style="color:var(--ok)">${nOk}</b>문제 정답, 총 ${fmtSec(tot)}</div></div></div>
+      ${r.animal&&AM[r.animal]?`<div class="small muted" style="margin-top:8px">획득 스티커: ${AM[r.animal].name}${r.perfect?' (금테 🏀)':''}</div>`:'<div class="small" style="margin-top:8px;color:var(--ball);font-weight:700">5문제를 다 풀지 않아 스티커를 받지 못했어요</div>'}</div>
+    <div class="card" style="margin-top:10px;padding:4px 16px">${ps.map((p,i)=>{if(!p)return '';const x=r.items[i];const w=S.wrong[p.id];return `<div class="pq"><div class="row"><b class="small">${i+1}</b>${lvChip(p)}<span class="sp"></span>${x?`<span class="tag ${x.ok?'ok':'bad'}">${x.ok?'정답':'오답'}</span><span class="timer">${fmtSec(x.sec)}</span>`:'<span class="tag" style="background:var(--surface-2);color:var(--ink-3)">안 풂</span>'}</div>
+      <div class="small" style="margin:6px 0;word-break:keep-all">${esc(p.q)}</div>
+      <table class="tbl"><tr><td>정답</td><td>${esc(p.a)} ${esc(p.u)}</td></tr>${x?`<tr><td>아이 답</td><td style="color:${x.ok?'var(--ok)':'var(--bad)'};font-weight:700">${esc(x.ans)} ${esc(p.u)}</td></tr>`:''}${w&&x&&!x.ok?`<tr><td>누적 오답</td><td>${w.count}회 ${w.fixed?'(다시풀기로 해결)':'(미해결)'}</td></tr>`:''}</table></div>`}).join('')}</div>`;
+  }
+  const now=new Date(),isCur=y===now.getFullYear()&&m===now.getMonth();
+  return `<div class="card" style="padding:12px"><div class="row" style="margin-bottom:8px"><button class="btn small ghost" id="pPrev" aria-label="이전 달">‹</button><b class="sp" style="text-align:center">${y}년 ${m+1}월</b><button class="btn small ghost" id="pNext" aria-label="다음 달" ${isCur?'disabled':''}>›</button></div>
+    <div class="mcal">${WD.map(w=>`<span class="small muted" style="text-align:center;font-weight:700">${w}</span>`).join('')}${cells}</div>
+    <div class="row small muted" style="margin-top:8px;gap:12px;flex-wrap:wrap"><span>동물: 완료</span><span>노란 칸: 5문제 모두 정답</span><span>◐: 풀다 멈춤</span></div></div>
+  <div style="margin-top:12px">${detail}</div>`;
+}
+function parentWrong(){
+  const all=wrongList();
+  const sortBar=`<div class="seg" style="margin-bottom:12px"><button data-ps="count" class="${ui.pSort==='count'?'on':''}" style="flex:1">오답 많은 순</button><button data-ps="recent" class="${ui.pSort==='recent'?'on':''}" style="flex:1">최근 순</button></div>`;
+  return sortBar+U.slice().reverse().map(u=>{
+    let list=all.filter(x=>x.p.unit===u.id);if(!list.length&&u.id!==U[curUnit()].id)return '';
+    list.sort(ui.pSort==='count'?(a,b)=>b.count-a.count:(a,b)=>((b.last||'')>(a.last||'')?1:(b.last||'')<(a.last||'')?-1:0));
+    const tot=list.reduce((s,x)=>s+x.count,0),open=list.filter(x=>!x.fixed).length,mmN=list.filter(x=>x.p.lv==='mm').length;
+    return `<div style="margin-bottom:18px"><b>${esc(u.name)}</b><div class="small muted" style="margin-bottom:8px">오답 문제 ${list.length}개 (기본 ${list.length-mmN}, MM ${mmN}), 누적 오답 ${tot}회, 미해결 ${open}개</div>
+    <div class="card" style="padding:4px 16px">${list.length?list.map(x=>`<div class="pq"><div class="row"><span class="disp" style="font-size:22px;color:var(--bad);min-width:42px">${x.count}회</span>${lvChip(x.p)}<span class="sp"></span><span class="tag ${x.fixed?'ok':'bad'}">${x.fixed?'해결':'미해결'}</span></div>
+      <div class="small" style="margin:6px 0;word-break:keep-all">${esc(x.p.q)}</div><div class="small muted">정답 ${esc(x.p.a)} ${esc(x.p.u)}, 처음 틀린 날 ${x.first?shortDate(x.first):'-'}, 최근 ${x.last?shortDate(x.last):'-'}</div></div>`).join(''):'<div style="padding:24px 0;text-align:center" class="muted small">아직 오답이 없어요</div>'}</div></div>`;
+  }).join('');
+}
+
+/* ---------- 시작 ---------- */
+(function boot(){
+  if(FAMILY&&!location.hash){const m=lsGet(K_MODE);if(m==='kid'||m==='parent')location.hash=m}
+  render();connect();
+  let last=TODAY();
+  const dayCheck=()=>{if(TODAY()!==last){last=TODAY();ui.started=false;ui.fb=null;ui.qStart=null;render()}};
+  setInterval(dayCheck,30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)dayCheck()});
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+
+</script>
+</body>
+</html>
